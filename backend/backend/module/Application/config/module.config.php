@@ -55,17 +55,6 @@ return [
     ],
 ],
 
- 'orders-cancel' => [
-    'type' => \Laminas\Router\Http\Literal::class,
-    'options' => [
-        'route' => '/orders/cancel',
-        'defaults' => [
-            'controller' => \Application\Controller\OrderController::class,
-            'action' => 'cancel',
-        ],
-    ],
-],
-
             'products-list' => [
                 'type' => \Laminas\Router\Http\Literal::class,
                 'options' => [
