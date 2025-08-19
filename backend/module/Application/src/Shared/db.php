@@ -12,7 +12,7 @@ class Db
         if (!self::$adapter) {
             self::$adapter = new Adapter([
                 'driver'   => 'Pdo_Pgsql',
-                'host'     => 'host.docker.internal',
+                'host'     => 'localhost',  ## alterar "localhost" para "host.docker.internal" na utilização do docker
                 'dbname'   => 'sdv',
                 'username' => 'postgres',
                 'password' => 'QWE123',
@@ -23,4 +23,5 @@ class Db
         return self::$adapter;
     }
 }
+
 
