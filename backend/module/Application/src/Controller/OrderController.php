@@ -43,7 +43,7 @@ class OrderController extends AbstractActionController
                 'ok' => true,
                 'user' => $user,
                 'pedidos' => $pedidos,
-                'timestamp' => date('Y-m-d H:i:s')
+                'timestamp' => date('Y-m-d H:i:s') 
             ]);
 
         } catch (\Exception $e) {
@@ -167,6 +167,92 @@ class OrderController extends AbstractActionController
             ]);
 
         } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+    public function getAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+
+            $adapter = Db::adapter();
+
+            $sql = "SELECT p.*, c.nome as cliente_nome
+                    FROM pedidos p
+                    JOIN clientes c ON c.id = p.cliente_id
+                    WHERE p.id = :id";
+            $stmt = $adapter->createStatement($sql);
+            $pedido = $stmt->execute(['id' => $id])->current();
+
+            if (!$pedido) {
+                return new JsonModel(['ok'=>false,'error'=>'Pedido não encontrado']);
+            }
+
+            $sqlItens = "SELECT pi.*, pr.nome as produto_nome
+                         FROM pedido_itens pi
+                         JOIN produtos pr ON pr.id = pi.produto_id
+                         WHERE pi.pedido_id = :id";
+            $stmtItens = $adapter->createStatement($sqlItens);
+            $itens = iterator_to_array($stmtItens->execute(['id'=>$id]));
+
+            $pedido['itens'] = $itens;
+
+            return new JsonModel(['ok'=>true,'pedido'=>$pedido]);
+
+        } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+    public function updateAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $adapter = Db::adapter();
+            $sql = "UPDATE pedidos 
+                    SET cliente_id = :cliente_id, status = :status
+                    WHERE id = :id";
+            $stmt = $adapter->createStatement($sql);
+            $stmt->execute([
+                'id' => $id,
+                'cliente_id' => $data['cliente_id'] ?? null,
+                'status' => $data['status'] ?? 'aberto'
+            ]);
+
+            return new JsonModel(['ok'=>true,'message'=>'Pedido atualizado com sucesso']);
+
+        } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+    public function deleteAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+
+            $adapter = Db::adapter();
+            $connection = $adapter->getDriver()->getConnection();
+            $connection->beginTransaction();
+
+            $sqlItens = "DELETE FROM pedido_itens WHERE pedido_id = :id";
+            $adapter->createStatement($sqlItens)->execute(['id' => $id]);
+
+            $sql = "DELETE FROM pedidos WHERE id = :id";
+            $adapter->createStatement($sql)->execute(['id' => $id]);
+
+            $connection->commit();
+
+            return new JsonModel(['ok'=>true,'message'=>'Pedido deletado com sucesso']);
+
+        } catch (\Exception $e) {
+            if (isset($connection)) $connection->rollback();
             return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
         }
     }

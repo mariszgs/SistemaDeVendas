@@ -8,7 +8,6 @@ use Application\Shared\Db;
 
 class ClientController extends AbstractActionController
 {
-    // Listar clientes
     public function listAction()
     {
         try {
@@ -33,7 +32,6 @@ class ClientController extends AbstractActionController
         }
     }
 
-    // Criar cliente
     public function createAction()
     {
         try {
@@ -62,4 +60,89 @@ class ClientController extends AbstractActionController
             return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
         }
     }
+
+    public function getAction()
+    {
+        try {
+        $user = JwtMiddleware::validateToken();
+        $id = (int) $this->params()->fromRoute('id', 0);
+
+        if ($id <= 0) {
+            return new JsonModel(['ok'=>false,'error'=>'ID inválido']);
+        }
+
+        $adapter = Db::adapter();
+        $sql = "SELECT * FROM clientes WHERE id = :id";
+        $stmt = $adapter->createStatement($sql);
+        $result = $stmt->execute(['id' => $id])->current();
+
+        if (!$result) {
+            return new JsonModel(['ok'=>false,'error'=>'Cliente não encontrado']);
+        }
+
+        return new JsonModel(['ok'=>true,'client'=>$result]);
+
+    } catch (\Exception $e) {
+        return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+    }
+}
+
+    public function updateAction()
+    {
+        try {
+        $user = JwtMiddleware::validateToken();
+        $id = (int) $this->params()->fromRoute('id', 0);
+
+        if ($id <= 0) {
+            return new JsonModel(['ok'=>false,'error'=>'ID inválido']);
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) {
+            return new JsonModel(['ok'=>false,'error'=>'Nenhum dado enviado']);
+        }
+
+        $adapter = Db::adapter();
+        $sql = "UPDATE clientes 
+                SET nome = :nome, email = :email, cnpj = :cnpj, telefone = :telefone, endereco = :endereco
+                WHERE id = :id";
+        $stmt = $adapter->createStatement($sql);
+        $stmt->execute([
+            'id' => $id,
+            'nome' => $data['nome'] ?? '',
+            'email' => $data['email'] ?? '',
+            'cnpj' => $data['cnpj'] ?? '',
+            'telefone' => $data['telefone'] ?? '',
+            'endereco' => $data['endereco'] ?? ''
+        ]);
+
+        return new JsonModel(['ok'=>true,'message'=>'Cliente atualizado com sucesso']);
+
+    } catch (\Exception $e) {
+        return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+    }
+}
+
+    public function deleteAction()
+    {
+            try {
+        $user = JwtMiddleware::validateToken();
+        $id = (int) $this->params()->fromRoute('id', 0);
+
+        if ($id <= 0) {
+            return new JsonModel(['ok'=>false,'error'=>'ID inválido']);
+        }
+
+        $adapter = Db::adapter();
+        $sql = "DELETE FROM clientes WHERE id = :id";
+        $stmt = $adapter->createStatement($sql);
+        $stmt->execute(['id' => $id]);
+
+        return new JsonModel(['ok'=>true,'message'=>'Cliente removido com sucesso']);
+
+    } catch (\Exception $e) {
+        return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+    }
+}
+
 }

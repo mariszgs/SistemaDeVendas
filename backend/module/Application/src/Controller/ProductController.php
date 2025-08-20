@@ -40,7 +40,7 @@ class ProductController extends AbstractActionController
     public function createAction()
     {
         try {
-            $user = JwtMiddleware::validateToken(); // valida JWT
+            $user = JwtMiddleware::validateToken(); 
             $data = json_decode(file_get_contents('php://input'), true);
 
             if (!isset($data['nome'], $data['preco'], $data['estoque'])) {
@@ -60,6 +60,73 @@ class ProductController extends AbstractActionController
             ]);
 
             return new JsonModel(['ok'=>true,'message'=>'Produto criado com sucesso']);
+
+        } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+     public function getAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+
+            $adapter = Db::adapter();
+            $sql = "SELECT * FROM produtos WHERE id = :id";
+            $stmt = $adapter->createStatement($sql);
+            $result = $stmt->execute(['id' => $id])->current();
+
+            if (!$result) {
+                return new JsonModel(['ok'=>false,'error'=>'Produto não encontrado']);
+            }
+
+            return new JsonModel(['ok'=>true,'product'=>$result]);
+
+        } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+    public function updateAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $adapter = Db::adapter();
+            $sql = "UPDATE produtos 
+                    SET nome = :nome, preco = :preco, descricao = :descricao, estoque = :estoque
+                    WHERE id = :id";
+            $stmt = $adapter->createStatement($sql);
+            $stmt->execute([
+                'id' => $id,
+                'nome' => $data['nome'] ?? '',
+                'preco' => $data['preco'] ?? 0,
+                'descricao' => $data['descricao'] ?? '',
+                'estoque' => $data['estoque'] ?? 0
+            ]);
+
+            return new JsonModel(['ok'=>true,'message'=>'Produto atualizado com sucesso']);
+
+        } catch (\Exception $e) {
+            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        }
+    }
+
+    public function deleteAction()
+    {
+        try {
+            $user = JwtMiddleware::validateToken();
+            $id = $this->params()->fromRoute('id');
+
+            $adapter = Db::adapter();
+            $sql = "DELETE FROM produtos WHERE id = :id";
+            $stmt = $adapter->createStatement($sql);
+            $stmt->execute(['id' => $id]);
+
+            return new JsonModel(['ok'=>true,'message'=>'Produto deletado com sucesso']);
 
         } catch (\Exception $e) {
             return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);

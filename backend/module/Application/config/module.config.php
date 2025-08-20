@@ -22,6 +22,48 @@ return [
     ],
 ],
 
+  'clients-get' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/clients/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\ClientController::class,
+            'action' => 'get',
+        ],
+        'constraints' => [
+            'id' => '[0-9]+',
+        ],
+    ],
+],
+
+  'clients-update' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/clients/update/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\ClientController::class,
+            'action' => 'update',
+        ],
+        'constraints' => [
+            'id' => '[0-9]+',
+        ],
+    ],
+],
+
+  'clients-delete' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/clients/delete/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\ClientController::class,
+            'action' => 'delete',
+        ],
+        'constraints' => [
+            'id' => '[0-9]+',
+        ],
+    ],
+],
+
 'clients-create' => [
     'type' => \Laminas\Router\Http\Literal::class,
     'options' => [
@@ -66,21 +108,43 @@ return [
     ],
 ],
 
-            'products-list' => [
-                'type' => \Laminas\Router\Http\Literal::class,
-                'options' => [
-                    'route' => '/products',
-                    'defauts' => [
-                        'controller' => \Application\Controller\ProductController::class,
-                        'action' => 'list',
-                    ],
-                ],
-            ],
+  'orders-get' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => 'orders/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\OrderController::class,
+            'action' => 'get'
+        ],
+    ],
+],
 
-            'product-create' => [
+  'order-update' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/orders/update/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\OrderController::class,
+            'action' => 'update',
+        ],
+    ],
+],
+
+  'order-delete' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/orders/delete/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\OrderController::class,
+            'action' => 'delete',
+        ],
+    ],
+],
+
+ 'product-create' => [
                 'type' => \Laminas\Router\Http\Literal::class,
                 'options' => [
-                    'route' => '/products/create',
+                    'route' => '/products/',
                     'defaults' => [
                         'controller' => \Application\Controller\ProductController::class,
                         'action' => 'create',
@@ -88,16 +152,50 @@ return [
                 ],
             ],
 
-            'products' => [
-            'type' => \Laminas\Router\Http\Literal::class,
-            'options' => [
-            'route' => '/products',
-            'defaults' => [
-            'controller' => \Application\Controller\ProductController::class,
-            'action' => 'list',
+            'product-list' => [
+                'type' => \Laminas\Router\Http\Literal::class,
+                'options' => [
+                    'route' => '/products',
+                    'defaults' => [
+                        'controller' => \Application\Controller\ProductController::class,
+                        'action' => 'list',
+                    ],
+                ],
+            ],
+
+            'product-get' => [
+               'type' => \Laminas\Router\Http\Segment::class,
+              'options' => [
+                 'route' => '/products/:id',
+                 'defaults' => [
+                    'controller' => \Application\Controller\ProductController::class,
+                    'action' => 'get',
         ],
     ],
 ],
+
+'product-update' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/products/update/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\ProductController::class,
+            'action' => 'update',
+        ],
+    ],
+],
+
+'product-delete' => [
+    'type' => \Laminas\Router\Http\Segment::class,
+    'options' => [
+        'route' => '/products/delete/:id',
+        'defaults' => [
+            'controller' => \Application\Controller\ProductController::class,
+            'action' => 'delete',
+        ],
+    ],
+],
+
 
             'user-login' => [
             'type' => \Laminas\Router\Http\Literal::class,
