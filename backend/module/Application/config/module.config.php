@@ -11,6 +11,29 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 return [
     'router' => [
         'routes' => [
+
+    'mock-nfe-emitir' => [
+        'type' => \Laminas\Router\Http\Literal::class,
+        'options' => [
+            'route' => '/mock/nfe/emitir',
+            'defaults' => [
+                'controller' => \Application\Controller\MockNfeController::class,
+                'action' => 'emitir',
+                ],
+            ],
+        ],
+
+        'mock-nfe-consultar' => [
+            'type' => \Laminas\Router\Http\Literal::class,
+            'options' => [
+                'route' => '/mock/nfe/consultar',
+                'defaults' => [
+                    'controller' => \Application\Controller\MockNfeController::class,
+                    'action' => 'consultar',
+                ],
+            ],
+        ],
+
 'clients-list' => [
     'type' => \Laminas\Router\Http\Literal::class,
     'options' => [
@@ -21,6 +44,8 @@ return [
         ],
     ],
 ],
+
+
 
   'clients-get' => [
     'type' => \Laminas\Router\Http\Segment::class,
@@ -249,8 +274,8 @@ return [
                     ],
                 ],
             ],
-        ],
-    ],
+     ],
+ ],
     'controllers' => [
         'factories' => [
             \Application\Controller\ClientController::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
@@ -258,6 +283,7 @@ return [
             \Application\Controller\UserController::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             \Application\Controller\ProductController::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             \Application\Controller\HealthController::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
+            \Application\Controller\MockNfeController::class => InvokableFactory::class,
             Controller\IndexController::class => InvokableFactory::class,
         ],
     ],

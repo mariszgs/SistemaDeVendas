@@ -60,7 +60,7 @@ class UserController extends AbstractActionController
         'nome' => $user['nome'],
         'email' => $user['email'],
         'iat' => time(),
-        'exp' => time() + 3600 // 1 hora
+        'exp' => time() + 3600 
     ];
 
     $jwt = JWT::encode($payload, 'SUA_CHAVE_SECRETA', 'HS256');
