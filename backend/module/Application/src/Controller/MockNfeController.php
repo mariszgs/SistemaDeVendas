@@ -8,17 +8,19 @@ class MockNfeController extends AbstractActionController
 {
     public function emitirAction()
     {
-        $pedidoId = $this->params()->fromRoute('id', null);
-
-        if (!$pedidoId) {
-            return new JsonModel([
-                "status" => "erro",
-                "mensagem" => "Pedido não informado."
-            ]); 
-        }
+        $rawBody = file_get_contents('php://input');
+error_log("RAW BODY => " . $rawBody);
 
         $dadosPedido = json_decode(file_get_contents('php://input'), true);
 
+$pedidoId = $dadosPedido['pedido_id'] ?? null;
+
+if (!$pedidoId) {
+    return new JsonModel([
+        "status" => "erro",
+        "mensagem" => "Pedido não informado no corpo da requisição."
+    ]);
+}
         $clienteId = $dadosPedido['cliente_id'] ?? null;
         $total = $dadosPedido['total'] ?? 0;
         $itens = $dadosPedido['itens'] ?? [];

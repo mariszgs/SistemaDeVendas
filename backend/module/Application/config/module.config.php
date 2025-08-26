@@ -11,7 +11,6 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
 return [
     'router' => [
         'routes' => [
-
     'mock-nfe-emitir' => [
         'type' => \Laminas\Router\Http\Literal::class,
         'options' => [

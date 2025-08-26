@@ -94,7 +94,7 @@ class OrderController extends AbstractActionController
             ]);
         }
 
-        $client = new \Laminas\Http\Client('http://localhost:8080/nfe/emitir', [
+        $client = new \Laminas\Http\Client('http://sdv.local/mock/nfe/emitir', [
             'adapter' => 'Laminas\Http\Client\Adapter\Curl',
             'timeout' => 30
         ]);
