@@ -33,6 +33,17 @@ return [
             ],
         ],
 
+        'client' => [
+            'type'    => 'Segment',
+            'options' => [
+                'route'    => '/client[/:action[/:id]]',
+                'defaults' => [
+                    'controller' => \Application\Controller\ClientController::class,
+                    'action'     => 'list', 
+                ],
+            ],
+        ],
+
 'clients-list' => [
     'type' => \Laminas\Router\Http\Literal::class,
     'options' => [

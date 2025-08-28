@@ -3,34 +3,42 @@ namespace Application\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 use Application\Middleware\JwtMiddleware;
 use Application\Shared\Db;
 
 class ClientController extends AbstractActionController
 {
     public function listAction()
-    {
-        try {
-            $user = JwtMiddleware::validateToken();
-            $adapter = Db::adapter();
+{
+    try {
+        $user = JwtMiddleware::validateToken();
+        $adapter = Db::adapter();
 
-            $sql = "SELECT * FROM clientes ORDER BY id DESC";
-            $stmt = $adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
-            $clients = iterator_to_array($stmt);
+        $sql = "SELECT * FROM clientes ORDER BY id DESC";
+        $stmt = $adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
+        $clients = iterator_to_array($stmt);
 
+        if ($this->params()->fromQuery('format') === 'json') {
             return new JsonModel([
                 'ok' => true,
                 'user' => $user,
                 'clients' => $clients
             ]);
-
-        } catch (\Exception $e) {
-            return new JsonModel([
-                'ok' => false,
-                'error' => $e->getMessage()
-            ]);
         }
+
+        return new ViewModel([
+            'clients' => $clients,
+            'user'    => $user
+        ]);
+
+    } catch (\Exception $e) {
+        return new JsonModel([
+            'ok' => false,
+            'error' => $e->getMessage()
+        ]);
     }
+}
 
     public function createAction()
     {
