@@ -66,34 +66,39 @@ class OrderController extends AbstractActionController
 
         $adapter = Db::adapter();
 
+        // calcular total
         $total = 0;
         foreach ($data['itens'] as $item) {
             $total += $item['quantidade'] * $item['preco_unitario'];
         }
 
-        $sqlPedido = "INSERT INTO pedidos (cliente_id, total, status) VALUES (:cliente_id, :total, :status) RETURNING id";
+        // criar pedido
+        $sqlPedido = "INSERT INTO pedidos (cliente_id, total, status) 
+                      VALUES (:cliente_id, :total, :status) RETURNING id";
         $stmtPedido = $adapter->createStatement($sqlPedido);
         $result = $stmtPedido->execute([
             'cliente_id' => $data['cliente_id'],
-            'total' => $total,
-            'status' => $data['status'] ?? 'pendente'
+            'total'      => $total,
+            'status'     => $data['status'] ?? 'pendente'
         ]);
 
         $pedidoId = $result->current()['id'];
 
+        // salvar itens
         $sqlItem = "INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario) 
                     VALUES (:pedido_id, :produto_id, :quantidade, :preco_unitario)";
         $stmtItem = $adapter->createStatement($sqlItem);
 
         foreach ($data['itens'] as $item) {
             $stmtItem->execute([
-                'pedido_id' => $pedidoId,
-                'produto_id' => $item['produto_id'],
-                'quantidade' => $item['quantidade'],
+                'pedido_id'      => $pedidoId,
+                'produto_id'     => $item['produto_id'],
+                'quantidade'     => $item['quantidade'],
                 'preco_unitario' => $item['preco_unitario']
             ]);
         }
 
+        // chamar mock de NF-e
         $client = new \Laminas\Http\Client('http://sdv.local/mock/nfe/emitir', [
             'adapter' => 'Laminas\Http\Client\Adapter\Curl',
             'timeout' => 30
@@ -102,10 +107,10 @@ class OrderController extends AbstractActionController
         $client->setMethod('POST');
         $client->setHeaders(['Content-Type' => 'application/json']);
         $client->setRawBody(json_encode([
-            'pedido_id' => $pedidoId,
+            'pedido_id'  => $pedidoId,
             'cliente_id' => $data['cliente_id'],
-            'total' => $total,
-            'itens' => $data['itens']
+            'total'      => $total,
+            'itens'      => $data['itens']
         ]));
 
         $response = $client->send();
@@ -113,19 +118,41 @@ class OrderController extends AbstractActionController
         $notaFiscal = [];
         if ($response->isSuccess()) {
             $notaFiscal = json_decode($response->getBody(), true);
+
+            if (isset($notaFiscal['nfe'])) {
+                $nfe = $notaFiscal['nfe'];
+
+                $sqlNfe = "INSERT INTO nfe 
+                    (pedido_id, chave, numero, serie, cliente_id, valor_total, qtd_itens, url_xml, url_danfe) 
+                    VALUES 
+                    (:pedido_id, :chave, :numero, :serie, :cliente_id, :valor_total, :qtd_itens, :url_xml, :url_danfe)";
+
+                $stmtNfe = $adapter->createStatement($sqlNfe);
+                $stmtNfe->execute([
+                    'pedido_id'   => $pedidoId,
+                    'chave'       => $nfe['chave'] ?? null,
+                    'numero'      => $nfe['numero'] ?? null,
+                    'serie'       => $nfe['serie'] ?? null,
+                    'cliente_id'  => $nfe['cliente_id'] ?? $data['cliente_id'],
+                    'valor_total' => $nfe['valor_total'] ?? $total,
+                    'qtd_itens'   => $nfe['qtd_itens'] ?? count($data['itens']),
+                    'url_xml'     => $nfe['url_xml'] ?? null,
+                    'url_danfe'   => $nfe['url_danfe'] ?? null
+                ]);
+            }
         }
 
         return new JsonModel([
             'ok' => true,
             'message' => 'Pedido criado com sucesso',
             'pedido' => [
-                'id' => $pedidoId,
+                'id'         => $pedidoId,
                 'cliente_id' => $data['cliente_id'],
-                'total' => $total,
-                'status' => $data['status'] ?? 'pendente',
-                'itens' => $data['itens'],
-                'criado_em' => date('Y-m-d H:i:s'),
-                'usuario' => $user
+                'total'      => $total,
+                'status'     => $data['status'] ?? 'pendente',
+                'itens'      => $data['itens'],
+                'criado_em'  => date('Y-m-d H:i:s'),
+                'usuario'    => $user
             ],
             'nota_fiscal' => $notaFiscal
         ]);
@@ -134,6 +161,7 @@ class OrderController extends AbstractActionController
         return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
     }
 }
+
 
 
 
