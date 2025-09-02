@@ -40,8 +40,8 @@ if (!$pedidoId) {
                 "cliente_id" => $clienteId,
                 "valor_total" => $total,
                 "qtd_itens" => count($itens),
-                "url_xml" => "http://localhost:8080/xml/nfe-" . $pedidoId . ".xml",
-                "url_danfe" => "http://localhost:8080/danfe/nfe-" . $pedidoId . ".pdf"
+                "url_xml" => "http://sdv.local/xml/nfe-" . $pedidoId . ".xml",
+                "url_danfe" => "http://sdv.local/danfe/nfe-" . $pedidoId . ".pdf"
             ]
         ]);
     }

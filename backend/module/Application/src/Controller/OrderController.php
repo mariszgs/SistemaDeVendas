@@ -9,50 +9,81 @@ use Application\Shared\Db;
 class OrderController extends AbstractActionController
 {
     public function listAction()
-    {
-        try {
-            $user = JwtMiddleware::validateToken();
-            $adapter = Db::adapter();
+{
+    try {
+        $user = JwtMiddleware::validateToken();
+        $adapter = Db::adapter();
 
-            $sqlPedidos = "SELECT p.id, p.data_pedido, p.total, p.status, c.nome as cliente
-                           FROM pedidos p
-                           JOIN clientes c ON p.cliente_id = c.id
-                           ORDER BY p.id DESC";
-            $stmtPedidos = $adapter->query($sqlPedidos, $adapter::QUERY_MODE_EXECUTE);
-            $pedidosRaw = iterator_to_array($stmtPedidos);
+        $sql = "
+            SELECT 
+                p.id AS pedido_id,
+                p.data_pedido,
+                p.total,
+                p.status,
+                c.nome AS cliente,
+                i.produto_id,
+                i.quantidade,
+                i.preco_unitario,
+                n.chave,
+                n.numero,
+                n.serie,
+                n.url_xml,
+                n.url_danfe
+            FROM pedidos p
+            JOIN clientes c ON p.cliente_id = c.id
+            LEFT JOIN pedido_itens i ON p.id = i.pedido_id
+            LEFT JOIN nfe n ON p.id = n.pedido_id
+            ORDER BY p.id DESC
+        ";
 
-            $pedidos = [];
-            foreach ($pedidosRaw as $pedido) {
-                $sqlItens = "SELECT produto_id, quantidade, preco_unitario
-                             FROM pedido_itens WHERE pedido_id = :pedido_id";
-                $stmtItens = $adapter->createStatement($sqlItens);
-                $itensResult = $stmtItens->execute(['pedido_id' => $pedido['id']]);
-                $itens = iterator_to_array($itensResult);
+        $stmt = $adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
+        $rows = iterator_to_array($stmt);
 
-                $pedidos[] = [
-                    'id' => $pedido['id'],
-                    'cliente' => $pedido['cliente'],
-                    'total' => $pedido['total'],
-                    'status' => $pedido['status'],
-                    'data_pedido' => $pedido['data_pedido'],
-                    'itens' => $itens
+        $pedidos = [];
+        foreach ($rows as $row) {
+            $id = $row['pedido_id'];
+
+            if (!isset($pedidos[$id])) {
+                $pedidos[$id] = [
+                    'id' => $id,
+                    'cliente' => $row['cliente'],
+                    'total' => $row['total'],
+                    'status' => $row['status'],
+                    'data_pedido' => $row['data_pedido'],
+                    'itens' => [],
+                    'nota_fiscal' => $row['chave'] ? [
+                        'chave' => $row['chave'],
+                        'numero' => $row['numero'],
+                        'serie' => $row['serie'],
+                        'url_xml' => $row['url_xml'],
+                        'url_danfe' => $row['url_danfe']
+                    ] : null
                 ];
             }
 
-            return new JsonModel([
-                'ok' => true,
-                'user' => $user,
-                'pedidos' => $pedidos,
-                'timestamp' => date('Y-m-d H:i:s') 
-            ]);
-
-        } catch (\Exception $e) {
-            return new JsonModel([
-                'ok' => false,
-                'error' => $e->getMessage()
-            ]);
+            if ($row['produto_id']) {
+                $pedidos[$id]['itens'][] = [
+                    'produto_id' => $row['produto_id'],
+                    'quantidade' => $row['quantidade'],
+                    'preco_unitario' => $row['preco_unitario']
+                ];
+            }
         }
+
+        return new JsonModel([
+            'ok' => true,
+            'user' => $user,
+            'pedidos' => array_values($pedidos),
+            'timestamp' => (new \DateTime('now', new \DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s')
+        ]);
+
+    } catch (\Exception $e) {
+        return new JsonModel([
+            'ok' => false,
+            'error' => $e->getMessage()
+        ]);
     }
+}
 
     public function createAction()
 {
@@ -66,13 +97,11 @@ class OrderController extends AbstractActionController
 
         $adapter = Db::adapter();
 
-        // calcular total
         $total = 0;
         foreach ($data['itens'] as $item) {
             $total += $item['quantidade'] * $item['preco_unitario'];
         }
 
-        // criar pedido
         $sqlPedido = "INSERT INTO pedidos (cliente_id, total, status) 
                       VALUES (:cliente_id, :total, :status) RETURNING id";
         $stmtPedido = $adapter->createStatement($sqlPedido);
@@ -84,7 +113,6 @@ class OrderController extends AbstractActionController
 
         $pedidoId = $result->current()['id'];
 
-        // salvar itens
         $sqlItem = "INSERT INTO pedido_itens (pedido_id, produto_id, quantidade, preco_unitario) 
                     VALUES (:pedido_id, :produto_id, :quantidade, :preco_unitario)";
         $stmtItem = $adapter->createStatement($sqlItem);
@@ -98,7 +126,6 @@ class OrderController extends AbstractActionController
             ]);
         }
 
-        // chamar mock de NF-e
         $client = new \Laminas\Http\Client('http://sdv.local/mock/nfe/emitir', [
             'adapter' => 'Laminas\Http\Client\Adapter\Curl',
             'timeout' => 30
@@ -151,7 +178,7 @@ class OrderController extends AbstractActionController
                 'total'      => $total,
                 'status'     => $data['status'] ?? 'pendente',
                 'itens'      => $data['itens'],
-                'criado_em'  => date('Y-m-d H:i:s'),
+                'criado_em'  => (new \DateTime('now', new \DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s'),
                 'usuario'    => $user
             ],
             'nota_fiscal' => $notaFiscal
@@ -213,7 +240,7 @@ class OrderController extends AbstractActionController
                 'pedido' => [
                     'id' => $pedidoId,
                     'status' => 'cancelado',
-                    'cancelado_em' => date('Y-m-d H:i:s'),
+                    'cancelado_em' => (new \DateTime('now', new \DateTimeZone('America/Sao_Paulo')))->format('Y-m-d H:i:s'),
                     'usuario' => $user
                 ]
             ]);
