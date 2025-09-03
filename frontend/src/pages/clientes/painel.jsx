@@ -1,25 +1,34 @@
-// src/pages/clientes/painel.jsx
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ClientesPainel() {
-  const navigate = useNavigate();
-
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Painel de Clientes</h1>
-      <div className="flex flex-col gap-2">
-        <button
-          onClick={() => navigate("/clientes")}
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+      <h1 className="text-2xl font-bold mb-4">Gerenciar Clientes</h1>
+      <div className="flex gap-4">
+        <Link
+          to="/clientes/listar"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           Listar
-        </button>
-        <button
-          onClick={() => navigate("/clientes/criar")}
-          className="px-4 py-2 bg-green-600 text-white rounded"
+        </Link>
+        <Link
+          to="/clientes/criar"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
         >
           Criar
-        </button>
+        </Link>
+        <Link
+          to="/clientes/editar/1"
+          className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+        >
+          Editar (exemplo)
+        </Link>
+        <Link
+          to="/clientes/deletar/1"
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        >
+          Deletar (exemplo)
+        </Link>
       </div>
     </div>
   );
