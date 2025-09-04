@@ -1,0 +1,250 @@
+/* Container geral do componente */
+.clientes-container {
+  padding: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Título */
+.clientes-container h2 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;  /* font-bold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+/* Botão Novo Cliente */
+.novo-cliente-btn {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  background-color: #FFB6C1; /* bg-green-600 */
+  color: white;
+  border-radius: 0.375rem; /* rounded */
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+/* Botão Novo Cliente hover */
+.novo-cliente-btn:hover {
+  background-color: #FFC0CB; /* tom mais escuro de verde */
+}
+
+/* Tabela */
+.clientes-tabela {
+  width: 100%; /* w-full */
+  margin-top: 1rem; /* mt-4 */
+  border-collapse: collapse;
+  border: 1px solid #ccc; /* border */
+}
+
+/* Cabeçalho da tabela */
+.clientes-tabela thead tr {
+  background-color: #e5e7eb; /* bg-gray-200 */
+}
+
+.clientes-tabela th, 
+.clientes-tabela td {
+  padding: 0.5rem; /* p-2 */
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+/* Linha com borda superior */
+.clientes-tabela tbody tr + tr {
+  border-top: 1px solid #ccc; /* border-t */
+}
+
+/* Container das ações (editar e deletar) */
+.acao-container {
+  display: flex;
+  gap: 0.5rem; /* gap-2 */
+}
+
+/* Botão Editar */
+.btn-editar {
+  padding: 0.25rem 0.5rem; /* px-2 py-1 */
+  background-color: #3b82f6; /* bg-blue-500 */
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.875rem;
+}
+
+/* Hover botão Editar */
+.btn-editar:hover {
+  background-color: #2563eb; /* azul mais escuro */
+}
+
+/* Botão Deletar */
+.btn-deletar {
+  padding: 0.25rem 0.5rem; /* px-2 py-1 */
+  background-color: #ef4444; /* bg-red-500 */
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+/* Hover botão Deletar */
+.btn-deletar:hover {
+  background-color: #dc2626; /* vermelho mais escuro */
+}
+
+/* CRIAR CLIENTE */
+.form-titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Formulário */
+.clientes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Campos de input */
+.form-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* Botão de enviar */
+.form-botao {
+  padding: 0.75rem 1.5rem;
+  background-color: #FFB6C1;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form-botao:hover {
+  background-color: #FFC0CB;
+}
+
+/* ========================
+   PÁGINA: Atualizar Cliente
+   ======================== */
+
+/* Container geral (reaproveita o mesmo da listagem) */
+.clientes-container {
+  padding: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Título centralizado e com espaçamento */
+.form-titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Formulário centralizado e organizado */
+.clientes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Estilo dos inputs */
+.form-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* Botão de envio (Atualizar) */
+.form-botao {
+  padding: 0.75rem 1.5rem;
+  background-color: #FFB6C1;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-botao:hover {
+  background-color: #FFC0CB;
+}
+
+/* DELETAR */
+.form-texto {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.btn-deletar-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* Botão confirmar exclusão */
+.form-botao-deletar {
+  padding: 0.75rem 1.5rem;
+  background-color: #ef4444;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.form-botao-deletar:hover {
+  background-color: #dc2626;
+}
+
+/* Botão cancelar */
+.form-botao-cancelar {
+  padding: 0.75rem 1.5rem;
+  background-color: #6b7280;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.form-botao-cancelar:hover {
+  background-color: #4b5563;
+}

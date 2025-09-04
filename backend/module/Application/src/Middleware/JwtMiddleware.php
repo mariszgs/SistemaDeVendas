@@ -8,8 +8,16 @@ use Firebase\JWT\Key;
 
 class JwtMiddleware extends AbstractActionController
 {
+    // Flag para ativar/desativar validação do token
+    private static $validate = false; // coloque false para desativar temporariamente
+
     public static function validateToken(): array
     {
+        if (!self::$validate) {
+            // Se a validação estiver desativada, retorna um usuário fake ou vazio
+            return ['user' => 'guest'];
+        }
+
         $headers = getallheaders();
 
         if (!isset($headers['Authorization'])) {

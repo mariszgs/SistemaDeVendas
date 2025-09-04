@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import './clientes.css';
 
 function ClientesCriar() {
   const navigate = useNavigate();
   const [cliente, setCliente] = useState({
     nome: "",
     email: "",
+    cnpj: "",
+    telefone: "",
+    endereco: ""
   });
 
   function handleChange(e) {
@@ -16,22 +20,23 @@ function ClientesCriar() {
   function handleSubmit(e) {
     e.preventDefault();
     axios
-      .post("http://localhost/sdv/backend/public/clients", cliente)
-      .then(() => navigate("/clientes"))
+      .post("http://sdv.local/clients/create", cliente)
+      .then(() => navigate("/clientes/listar"))
       .catch((err) => console.error(err));
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Novo Cliente</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-96">
+    <div className="clientes-container">
+      <h2 className="form-titulo">Novo Cliente</h2>
+      <form onSubmit={handleSubmit} className="clientes-form">
         <input
           type="text"
           name="nome"
           placeholder="Nome"
           value={cliente.nome}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="form-input"
+          required
         />
         <input
           type="email"
@@ -39,12 +44,35 @@ function ClientesCriar() {
           placeholder="Email"
           value={cliente.email}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="form-input"
+          required
         />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
+        <input
+          type="text"
+          name="cnpj"
+          placeholder="CNPJ"
+          value={cliente.cnpj}
+          onChange={handleChange}
+          className="form-input"
+          required
+        />
+        <input
+          type="text"
+          name="telefone"
+          placeholder="Telefone"
+          value={cliente.telefone}
+          onChange={handleChange}
+          className="form-input"
+        />
+        <input
+          type="text"
+          name="endereco"
+          placeholder="Endereço"
+          value={cliente.endereco}
+          onChange={handleChange}
+          className="form-input"
+        />
+        <button type="submit" className="form-botao">
           Salvar
         </button>
       </form>

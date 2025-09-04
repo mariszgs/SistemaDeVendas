@@ -1,63 +1,49 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import './pedidos.css';
 
 function PedidosCriar() {
+  const [clienteNome, setClienteNome] = useState("");
+  const [data, setData] = useState("");
+  const [status, setStatus] = useState("");
   const navigate = useNavigate();
-  const [pedido, setPedido] = useState({
-    cliente_id: "",
-    itens: "",
-    total: "",
-  });
-
-  function handleChange(e) {
-    setPedido({ ...pedido, [e.target.name]: e.target.value });
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios
-      .post("http://localhost/sdv/backend/public/orders", pedido)
-      .then(() => navigate("/pedidos"))
-      .catch((err) => console.error(err));
+    axios.post("http://sdv.local/orders", { clienteNome, data, status })
+      .then(() => navigate("/pedidos/listar"))
+      .catch(err => console.error(err));
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Novo Pedido</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-96">
-        <input
-          type="number"
-          name="cliente_id"
-          placeholder="ID do Cliente"
-          value={pedido.cliente_id}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          type="text"
-          name="itens"
-          placeholder="Itens (ex: Produto1, Produto2)"
-          value={pedido.itens}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          type="number"
-          name="total"
-          placeholder="Total"
-          value={pedido.total}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Salvar
-        </button>
-      </form>
-    </div>
+    <form className="pedidos-form" onSubmit={handleSubmit}>
+      <h2>Novo Pedido</h2>
+
+      <input
+        type="text"
+        placeholder="Nome do Cliente"
+        value={clienteNome}
+        onChange={e => setClienteNome(e.target.value)}
+        required
+      />
+
+      <input
+        type="date"
+        value={data}
+        onChange={e => setData(e.target.value)}
+        required
+      />
+
+      <select value={status} onChange={e => setStatus(e.target.value)} required>
+        <option value="">Selecione o status</option>
+        <option value="pendente">Pendente</option>
+        <option value="em andamento">Em andamento</option>
+        <option value="finalizado">Finalizado</option>
+      </select>
+
+      <button type="submit" className="btn-submit">Salvar</button>
+    </form>
   );
 }
 

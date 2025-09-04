@@ -146,7 +146,7 @@ return [
   'orders-get' => [
     'type' => \Laminas\Router\Http\Segment::class,
     'options' => [
-        'route' => 'orders/:id',
+        'route' => '/orders/get/:id',
         'defaults' => [
             'controller' => \Application\Controller\OrderController::class,
             'action' => 'get'

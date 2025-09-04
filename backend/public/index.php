@@ -3,6 +3,23 @@
 declare(strict_types=1);
 
 use Laminas\Mvc\Application;
+// Permite qualquer origem (para desenvolvimento)
+header("Access-Control-Allow-Origin: *");
+
+// Ou para uma origem específica (mais seguro)
+header("Access-Control-Allow-Origin: http://localhost:5173");
+
+// Permite métodos usados no seu frontend
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+// Permite cabeçalhos específicos, se necessário
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Opcional: responde às requisições OPTIONS (CORS preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit(0);
+}
+
 
 /**
  * This makes our life easier when dealing with paths. Everything is relative
@@ -35,3 +52,5 @@ $container = require __DIR__ . '/../config/container.php';
 /** @var Application $app */
 $app = $container->get('Application');
 $app->run();
+
+

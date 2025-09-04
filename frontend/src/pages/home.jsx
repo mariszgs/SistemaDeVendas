@@ -1,7 +1,9 @@
+import './Home.css';
+
 function Home() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Bem-vinda ao Sistema de Vendas</h1>
+    <div className="home">
+      <h1>Bem-vindo ao Sistema de Vendas</h1>
       <p>Escolha uma opção no menu à esquerda.</p>
     </div>
   );

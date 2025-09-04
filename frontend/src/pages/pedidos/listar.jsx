@@ -1,63 +1,52 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import './pedidos.css';
 
 function PedidosListar() {
   const [pedidos, setPedidos] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost/sdv/backend/public/orders")
-      .then((res) => setPedidos(res.data.pedidos))
-      .catch((err) => console.error(err));
-  }, []);
-
-  function handleDelete(id) {
-    if (!window.confirm("Tem certeza que deseja deletar?")) return;
-
-    axios
-      .delete(`http://localhost/sdv/backend/public/orders/delete/${id}`)
-      .then(() => setPedidos(pedidos.filter((p) => p.id !== id)))
-      .catch((err) => console.error(err));
-  }
+useEffect(() => {
+  axios.get("http://sdv.local/orders")
+    .then(res => {
+      if (Array.isArray(res.data.pedidos)) {
+        setPedidos(res.data.pedidos);
+        console.log('Pedidos:', res.data.pedidos); // log para debug
+      } else {
+        setPedidos([]);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      setPedidos([]);
+    });
+}, []);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Pedidos</h2>
-      <Link
-        to="/pedidos/criar"
-        className="px-4 py-2 bg-green-600 text-white rounded"
-      >
-        Novo Pedido
-      </Link>
-      <table className="w-full mt-4 border">
+    <div className="pedidos-container">
+      <h2>Pedidos</h2>
+      <Link to="/pedidos/criar" className="btn-novo">Novo Pedido</Link>
+
+      <table className="pedidos-tabela">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2">ID</th>
-            <th className="p-2">Cliente</th>
-            <th className="p-2">Total</th>
-            <th className="p-2">Ações</th>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((p) => (
-            <tr key={p.id} className="border-t">
-              <td className="p-2">{p.id}</td>
-              <td className="p-2">{p.cliente_nome}</td>
-              <td className="p-2">R$ {p.total}</td>
-              <td className="p-2 flex gap-2">
-                <Link
-                  to={`/pedidos/editar/${p.id}`}
-                  className="px-2 py-1 bg-blue-500 text-white rounded"
-                >
-                  Editar
-                </Link>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="px-2 py-1 bg-red-500 text-white rounded"
-                >
-                  Deletar
-                </button>
+          {pedidos.map(pedido => (
+            <tr key={pedido.id}>
+              <td>{pedido.id}</td>
+              <td>{pedido.cliente}</td>
+              <td>{pedido.data_pedido ? new Date(pedido.data_pedido).toLocaleDateString() : ''}</td>
+              <td>{pedido.status}</td>
+              <td>
+                <Link to={`/pedidos/editar/${pedido.id}`} className="btn-editar">Editar</Link>
+                <Link to={`/pedidos/deletar/${pedido.id}`} className="btn-deletar">Deletar</Link>
               </td>
             </tr>
           ))}

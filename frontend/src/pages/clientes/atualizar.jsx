@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import './clientes.css'; // 🔄 Importa o CSS
 
 function ClientesAtualizar() {
   const { id } = useParams();
   const navigate = useNavigate();
+  
   const [cliente, setCliente] = useState({
     nome: "",
     email: "",
+    cnpj: "",
+    telefone: "",
+    endereco: ""
   });
 
   useEffect(() => {
     axios
-      .get(`http://localhost/sdv/backend/public/clients/${id}`)
-      .then((res) => setCliente(res.data.cliente))
+      .get(`http://sdv.local/clients/${id}`)
+      .then((res) => setCliente(res.data.client))
       .catch((err) => console.error(err));
   }, [id]);
 
@@ -24,25 +29,23 @@ function ClientesAtualizar() {
   function handleSubmit(e) {
     e.preventDefault();
     axios
-      .post(
-        `http://localhost/sdv/backend/public/clients/update/${id}`,
-        cliente
-      )
+      .post(`http://sdv.local/clients/update/${id}`, cliente)
       .then(() => navigate("/clientes"))
       .catch((err) => console.error(err));
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Editar Cliente</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-96">
+    <div className="clientes-container">
+      <h2 className="form-titulo">Editar Cliente</h2>
+
+      <form onSubmit={handleSubmit} className="clientes-form">
         <input
           type="text"
           name="nome"
           placeholder="Nome"
           value={cliente.nome}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="form-input"
         />
         <input
           type="email"
@@ -50,12 +53,34 @@ function ClientesAtualizar() {
           placeholder="Email"
           value={cliente.email}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="form-input"
         />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-        >
+        <input
+          type="text"
+          name="cnpj"
+          placeholder="CNPJ"
+          value={cliente.cnpj}
+          onChange={handleChange}
+          className="form-input"
+        />
+        <input
+          type="text"
+          name="telefone"
+          placeholder="Telefone"
+          value={cliente.telefone}
+          onChange={handleChange}
+          className="form-input"
+        />
+        <input
+          type="text"
+          name="endereco"
+          placeholder="Endereço"
+          value={cliente.endereco}
+          onChange={handleChange}
+          className="form-input"
+        />
+
+        <button type="submit" className="form-botao">
           Atualizar
         </button>
       </form>

@@ -1,72 +1,62 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 function PedidosAtualizar() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [pedido, setPedido] = useState({
-    cliente_id: "",
-    itens: "",
-    total: "",
-  });
+  const [pedido, setPedido] = useState(null);
+  const [cliente, setCliente] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`http://localhost/sdv/backend/public/orders/${id}`)
-      .then((res) => setPedido(res.data.pedido))
-      .catch((err) => console.error(err));
+    axios.get(`http://sdv.local/orders/get/${id}`)
+      .then(res => {
+        console.log("Resposta da API:", res.data);
+        setPedido(res.data.pedido);
+        setCliente(res.data.pedido.cliente);
+        setStatus(res.data.pedido.status);
+      })
+      .catch(err => {
+        console.error("Erro ao buscar pedido: ", err);
+      });
   }, [id]);
-
-  function handleChange(e) {
-    setPedido({ ...pedido, [e.target.name]: e.target.value });
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios
-      .post(
-        `http://localhost/sdv/backend/public/orders/update/${id}`,
-        pedido
-      )
-      .then(() => navigate("/pedidos"))
-      .catch((err) => console.error(err));
+    axios.put(`http://sdv.local/orders/${id}`, { cliente, status })
+      .then(res => {
+        alert("Pedido atualizado com sucesso!");
+      })
+      .catch(err => {
+        console.error("Erro ao atualizar pedido: ", err);
+      });
+  }
+
+  if (!pedido) {
+    return <p>Carregando pedido...</p>;
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Editar Pedido</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-96">
-        <input
-          type="number"
-          name="cliente_id"
-          placeholder="ID do Cliente"
-          value={pedido.cliente_id}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          type="text"
-          name="itens"
-          placeholder="Itens"
-          value={pedido.itens}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          type="number"
-          name="total"
-          placeholder="Total"
-          value={pedido.total}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-        >
-          Atualizar
-        </button>
+      <h2>Editar Pedido #{pedido.id}</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Cliente:</label>
+          <input
+            type="text"
+            value={cliente}
+            onChange={e => setCliente(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Status:</label>
+          <select value={status} onChange={e => setStatus(e.target.value)}>
+            <option value="pendente">Pendente</option>
+            <option value="aprovado">Aprovado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+        <button type="submit">Salvar</button>
       </form>
     </div>
   );
