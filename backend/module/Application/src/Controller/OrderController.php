@@ -258,7 +258,6 @@ class OrderController extends AbstractActionController
 
         $adapter = Db::adapter();
 
-        // Busca o pedido com o nome do cliente
         $sql = "SELECT p.*, c.nome as cliente_nome
                 FROM pedidos p
                 JOIN clientes c ON c.id = p.cliente_id
@@ -270,7 +269,6 @@ class OrderController extends AbstractActionController
             return new JsonModel(['ok'=>false,'error'=>'Pedido não encontrado']);
         }
 
-        // Busca os itens do pedido
         $sqlItens = "SELECT pi.*, pr.nome as produto_nome
                      FROM pedido_itens pi
                      JOIN produtos pr ON pr.id = pi.produto_id
@@ -280,12 +278,11 @@ class OrderController extends AbstractActionController
 
         $pedido['itens'] = $itens;
 
-        // Busca a nota fiscal associada ao pedido (se existir)
+
         $sqlNfe = "SELECT * FROM nfe WHERE pedido_id = :id";
         $stmtNfe = $adapter->createStatement($sqlNfe);
         $nfe = $stmtNfe->execute(['id' => $id])->current();
 
-        // Monta a resposta incluindo a nota fiscal
         $notaFiscal = $nfe ? ['nfe' => $nfe] : null;
 
         return new JsonModel([
@@ -299,7 +296,7 @@ class OrderController extends AbstractActionController
     }
 }
 
-    public function updateAction()
+public function updateAction()
 {
     try {
         $user = JwtMiddleware::validateToken();
@@ -319,13 +316,17 @@ class OrderController extends AbstractActionController
             'status' => $data['status'] ?? 'aberto'
         ]);
 
-        // 2. Atualizar os itens (produto_id + quantidade)
+        // 2. Atualizar os itens do pedido e calcular total
+        $total = 0;
+        $qtdItens = 0;
+
         if (!empty($data['itens']) && is_array($data['itens'])) {
             foreach ($data['itens'] as $item) {
                 if (!isset($item['produto_id']) || !isset($item['quantidade'])) {
-                    continue; // pula se estiver faltando dados
+                    continue;
                 }
 
+                // Atualiza a quantidade
                 $sqlItem = "UPDATE pedido_itens 
                             SET quantidade = :quantidade 
                             WHERE pedido_id = :pedido_id AND produto_id = :produto_id";
@@ -335,16 +336,52 @@ class OrderController extends AbstractActionController
                     'produto_id' => $item['produto_id'],
                     'quantidade' => $item['quantidade']
                 ]);
+
+                // Buscar preço unitário
+                $sqlPreco = "SELECT preco FROM produtos WHERE id = :id";
+                $stmtPreco = $adapter->createStatement($sqlPreco);
+                $precoRow = $stmtPreco->execute(['id' => $item['produto_id']])->current();
+
+                $preco = isset($precoRow['preco']) ? (float)$precoRow['preco'] : 0;
+
+                // Acumular total e quantidade
+                $subtotal = $preco * $item['quantidade'];
+                $total += $subtotal;
+                $qtdItens += $item['quantidade'];
+            }
+
+            // 3. Atualizar o total do pedido
+            $sqlTotal = "UPDATE pedidos SET total = :total WHERE id = :id";
+            $stmtTotal = $adapter->createStatement($sqlTotal);
+            $stmtTotal->execute([
+                'total' => $total,
+                'id' => $id
+            ]);
+
+            // 4. Atualizar a nota fiscal (se existir)
+            $sqlCheckNfe = "SELECT id FROM nfe WHERE pedido_id = :id";
+            $stmtCheck = $adapter->createStatement($sqlCheckNfe);
+            $nfeRow = $stmtCheck->execute(['id' => $id])->current();
+
+            if ($nfeRow) {
+                $sqlUpdateNfe = "UPDATE nfe 
+                                 SET valor_total = :valor_total, qtd_itens = :qtd_itens 
+                                 WHERE pedido_id = :pedido_id";
+                $stmtUpdateNfe = $adapter->createStatement($sqlUpdateNfe);
+                $stmtUpdateNfe->execute([
+                    'valor_total' => $total,
+                    'qtd_itens'   => $qtdItens,
+                    'pedido_id'   => $id
+                ]);
             }
         }
 
-        return new JsonModel(['ok' => true, 'message' => 'Pedido atualizado com sucesso']);
+        return new JsonModel(['ok' => true, 'message' => 'Pedido e nota fiscal atualizados com sucesso']);
 
     } catch (\Exception $e) {
         return new JsonModel(['ok' => false, 'error' => $e->getMessage()]);
     }
 }
-
 
     public function deleteAction()
     {

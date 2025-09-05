@@ -1,4 +1,4 @@
-  import { useState } from "react";
+ import { useState } from "react";
   import axios from "axios";
   import { useNavigate } from "react-router-dom";
   import './pedidos.css';
@@ -31,7 +31,7 @@
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post("http://sdv.local/orders", {
+        const response = await axios.post("http://sdv.local/orders/create", {
           cliente_id: clienteId,
           status,
           itens

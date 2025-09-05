@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function PedidosAtualizar() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [pedido, setPedido] = useState(null);
   const [cliente, setCliente] = useState("");
   const [status, setStatus] = useState("");
@@ -14,7 +15,7 @@ function PedidosAtualizar() {
       .then(res => {
         if (res.data.ok && res.data.pedido) {
           setPedido(res.data.pedido);
-          setCliente(res.data.pedido.cliente_id || ""); 
+          setCliente(res.data.pedido.cliente_id || "");
           setStatus(res.data.pedido.status || "");
           setItens(res.data.pedido.itens || []);
         }
@@ -37,12 +38,13 @@ function PedidosAtualizar() {
       status,
       itens,
     })
-    .then(res => {
-      alert("Pedido atualizado com sucesso!");
-    })
-    .catch(err => {
-      console.error("Erro ao atualizar pedido: ", err);
-    });
+      .then(res => {
+        alert("Pedido atualizado com sucesso!");
+        navigate(`/dashboard/pedidos/visualizar/${id}`);
+      })
+      .catch(err => {
+        console.error("Erro ao atualizar pedido: ", err);
+      });
   }
 
   if (!pedido) {
@@ -72,8 +74,8 @@ function PedidosAtualizar() {
 
         <h3>Itens do Pedido</h3>
         {itens.map((item, index) => (
-          <div key={item.id} style={{ marginBottom: "1rem" }}>
-            <label>{item.produto_nome}:</label>
+          <div key={item.id || index} style={{ marginBottom: "1rem" }}>
+            <label>{item.produto_nome || item.nome || "Produto"}:</label>
             <input
               type="number"
               min="0"
