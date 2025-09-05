@@ -7,29 +7,42 @@ function PedidosAtualizar() {
   const [pedido, setPedido] = useState(null);
   const [cliente, setCliente] = useState("");
   const [status, setStatus] = useState("");
+  const [itens, setItens] = useState([]);
 
   useEffect(() => {
     axios.get(`http://sdv.local/orders/get/${id}`)
       .then(res => {
-        console.log("Resposta da API:", res.data);
-        setPedido(res.data.pedido);
-        setCliente(res.data.pedido.cliente);
-        setStatus(res.data.pedido.status);
+        if (res.data.ok && res.data.pedido) {
+          setPedido(res.data.pedido);
+          setCliente(res.data.pedido.cliente_id || ""); 
+          setStatus(res.data.pedido.status || "");
+          setItens(res.data.pedido.itens || []);
+        }
       })
       .catch(err => {
         console.error("Erro ao buscar pedido: ", err);
       });
   }, [id]);
 
+  function handleQuantidadeChange(index, novaQuantidade) {
+    const novosItens = [...itens];
+    novosItens[index].quantidade = Number(novaQuantidade);
+    setItens(novosItens);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    axios.put(`http://sdv.local/orders/${id}`, { cliente, status })
-      .then(res => {
-        alert("Pedido atualizado com sucesso!");
-      })
-      .catch(err => {
-        console.error("Erro ao atualizar pedido: ", err);
-      });
+    axios.put(`http://sdv.local/orders/update/${id}`, {
+      cliente_id: cliente,
+      status,
+      itens,
+    })
+    .then(res => {
+      alert("Pedido atualizado com sucesso!");
+    })
+    .catch(err => {
+      console.error("Erro ao atualizar pedido: ", err);
+    });
   }
 
   if (!pedido) {
@@ -37,13 +50,13 @@ function PedidosAtualizar() {
   }
 
   return (
-    <div>
+    <div className="pedidos-container">
       <h2>Editar Pedido #{pedido.id}</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="pedidos-form" onSubmit={handleSubmit}>
         <div>
-          <label>Cliente:</label>
+          <label>ID do Cliente:</label>
           <input
-            type="text"
+            type="number"
             value={cliente}
             onChange={e => setCliente(e.target.value)}
           />
@@ -56,7 +69,21 @@ function PedidosAtualizar() {
             <option value="cancelado">Cancelado</option>
           </select>
         </div>
-        <button type="submit">Salvar</button>
+
+        <h3>Itens do Pedido</h3>
+        {itens.map((item, index) => (
+          <div key={item.id} style={{ marginBottom: "1rem" }}>
+            <label>{item.produto_nome}:</label>
+            <input
+              type="number"
+              min="0"
+              value={item.quantidade}
+              onChange={e => handleQuantidadeChange(index, e.target.value)}
+            />
+          </div>
+        ))}
+
+        <button className="btn-submit" type="submit">Salvar</button>
       </form>
     </div>
   );

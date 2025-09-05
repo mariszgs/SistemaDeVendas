@@ -6,21 +6,21 @@ import './pedidos.css';
 function PedidosListar() {
   const [pedidos, setPedidos] = useState([]);
 
-useEffect(() => {
-  axios.get("http://sdv.local/orders")
-    .then(res => {
-      if (Array.isArray(res.data.pedidos)) {
-        setPedidos(res.data.pedidos);
-        console.log('Pedidos:', res.data.pedidos); 
-      } else {
+  useEffect(() => {
+    axios.get("http://sdv.local/orders")
+      .then(res => {
+        if (Array.isArray(res.data.pedidos)) {
+          setPedidos(res.data.pedidos);
+          console.log('Pedidos:', res.data.pedidos); 
+        } else {
+          setPedidos([]);
+        }
+      })
+      .catch(err => {
+        console.error(err);
         setPedidos([]);
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      setPedidos([]);
-    });
-}, []);
+      });
+  }, []);
 
   return (
     <div className="pedidos-container">
@@ -45,6 +45,7 @@ useEffect(() => {
               <td>{pedido.data_pedido ? new Date(pedido.data_pedido).toLocaleDateString() : ''}</td>
               <td>{pedido.status}</td>
               <td>
+                <Link to={`/dashboard/pedidos/visualizar/${pedido.id}`} className="btn-visualizar">Visualizar</Link>
                 <Link to={`/dashboard/pedidos/editar/${pedido.id}`} className="btn-editar">Editar</Link>
                 <Link to={`/dashboard/pedidos/deletar/${pedido.id}`} className="btn-deletar">Deletar</Link>
               </td>

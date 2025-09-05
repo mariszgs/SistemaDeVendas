@@ -30,7 +30,7 @@ function ClientesAtualizar() {
     e.preventDefault();
     axios
       .post(`http://sdv.local/clients/update/${id}`, cliente)
-      .then(() => navigate("/dashboard/clientes"))
+      .then(() => navigate("/dashboard/clientes/listar"))
       .catch((err) => console.error(err));
   }
 

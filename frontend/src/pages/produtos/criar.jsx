@@ -17,7 +17,7 @@ function ProdutosCriar() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios.post("http://sdv.local/products/create", produto)
+    axios.post("http://sdv.local/products/", produto)
       .then(() => navigate("/dashboard/produtos/listar"))
       .catch(err => console.error(err));
   }

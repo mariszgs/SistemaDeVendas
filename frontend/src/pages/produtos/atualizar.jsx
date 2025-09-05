@@ -25,7 +25,7 @@ function ProdutosAtualizar() {
   function handleSubmit(e) {
     e.preventDefault();
     axios.post(`http://sdv.local/products/update/${id}`, produto)
-      .then(() => navigate("/produtos/listar"))
+      .then(() => navigate("/dashboard/produtos/listar"))
       .catch(err => console.error(err));
   }
 

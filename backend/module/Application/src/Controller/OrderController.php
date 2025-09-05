@@ -251,64 +251,100 @@ class OrderController extends AbstractActionController
     }
 
     public function getAction()
-    {
-        try {
-            $user = JwtMiddleware::validateToken();
-            $id = $this->params()->fromRoute('id');
+{
+    try {
+        $user = JwtMiddleware::validateToken();
+        $id = $this->params()->fromRoute('id');
 
-            $adapter = Db::adapter();
+        $adapter = Db::adapter();
 
-            $sql = "SELECT p.*, c.nome as cliente_nome
-                    FROM pedidos p
-                    JOIN clientes c ON c.id = p.cliente_id
-                    WHERE p.id = :id";
-            $stmt = $adapter->createStatement($sql);
-            $pedido = $stmt->execute(['id' => $id])->current();
+        // Busca o pedido com o nome do cliente
+        $sql = "SELECT p.*, c.nome as cliente_nome
+                FROM pedidos p
+                JOIN clientes c ON c.id = p.cliente_id
+                WHERE p.id = :id";
+        $stmt = $adapter->createStatement($sql);
+        $pedido = $stmt->execute(['id' => $id])->current();
 
-            if (!$pedido) {
-                return new JsonModel(['ok'=>false,'error'=>'Pedido não encontrado']);
-            }
-
-            $sqlItens = "SELECT pi.*, pr.nome as produto_nome
-                         FROM pedido_itens pi
-                         JOIN produtos pr ON pr.id = pi.produto_id
-                         WHERE pi.pedido_id = :id";
-            $stmtItens = $adapter->createStatement($sqlItens);
-            $itens = iterator_to_array($stmtItens->execute(['id'=>$id]));
-
-            $pedido['itens'] = $itens;
-
-            return new JsonModel(['ok'=>true,'pedido'=>$pedido]);
-
-        } catch (\Exception $e) {
-            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        if (!$pedido) {
+            return new JsonModel(['ok'=>false,'error'=>'Pedido não encontrado']);
         }
+
+        // Busca os itens do pedido
+        $sqlItens = "SELECT pi.*, pr.nome as produto_nome
+                     FROM pedido_itens pi
+                     JOIN produtos pr ON pr.id = pi.produto_id
+                     WHERE pi.pedido_id = :id";
+        $stmtItens = $adapter->createStatement($sqlItens);
+        $itens = iterator_to_array($stmtItens->execute(['id'=>$id]));
+
+        $pedido['itens'] = $itens;
+
+        // Busca a nota fiscal associada ao pedido (se existir)
+        $sqlNfe = "SELECT * FROM nfe WHERE pedido_id = :id";
+        $stmtNfe = $adapter->createStatement($sqlNfe);
+        $nfe = $stmtNfe->execute(['id' => $id])->current();
+
+        // Monta a resposta incluindo a nota fiscal
+        $notaFiscal = $nfe ? ['nfe' => $nfe] : null;
+
+        return new JsonModel([
+            'ok' => true,
+            'pedido' => $pedido,
+            'nota_fiscal' => $notaFiscal
+        ]);
+
+    } catch (\Exception $e) {
+        return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
     }
+}
 
     public function updateAction()
-    {
-        try {
-            $user = JwtMiddleware::validateToken();
-            $id = $this->params()->fromRoute('id');
-            $data = json_decode(file_get_contents('php://input'), true);
+{
+    try {
+        $user = JwtMiddleware::validateToken();
+        $id = $this->params()->fromRoute('id');
+        $data = json_decode(file_get_contents('php://input'), true);
 
-            $adapter = Db::adapter();
-            $sql = "UPDATE pedidos 
-                    SET cliente_id = :cliente_id, status = :status
-                    WHERE id = :id";
-            $stmt = $adapter->createStatement($sql);
-            $stmt->execute([
-                'id' => $id,
-                'cliente_id' => $data['cliente_id'] ?? null,
-                'status' => $data['status'] ?? 'aberto'
-            ]);
+        $adapter = Db::adapter();
 
-            return new JsonModel(['ok'=>true,'message'=>'Pedido atualizado com sucesso']);
+        // 1. Atualizar o pedido (cliente e status)
+        $sql = "UPDATE pedidos 
+                SET cliente_id = :cliente_id, status = :status
+                WHERE id = :id";
+        $stmt = $adapter->createStatement($sql);
+        $stmt->execute([
+            'id' => $id,
+            'cliente_id' => $data['cliente_id'] ?? null,
+            'status' => $data['status'] ?? 'aberto'
+        ]);
 
-        } catch (\Exception $e) {
-            return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
+        // 2. Atualizar os itens (produto_id + quantidade)
+        if (!empty($data['itens']) && is_array($data['itens'])) {
+            foreach ($data['itens'] as $item) {
+                if (!isset($item['produto_id']) || !isset($item['quantidade'])) {
+                    continue; // pula se estiver faltando dados
+                }
+
+                $sqlItem = "UPDATE pedido_itens 
+                            SET quantidade = :quantidade 
+                            WHERE pedido_id = :pedido_id AND produto_id = :produto_id";
+                $stmtItem = $adapter->createStatement($sqlItem);
+                $stmtItem->execute([
+                    'pedido_id' => $id,
+                    'produto_id' => $item['produto_id'],
+                    'quantidade' => $item['quantidade']
+                ]);
+            }
         }
+
+        return new JsonModel(['ok' => true, 'message' => 'Pedido atualizado com sucesso']);
+
+    } catch (\Exception $e) {
+        return new JsonModel(['ok' => false, 'error' => $e->getMessage()]);
     }
+}
+
 
     public function deleteAction()
     {

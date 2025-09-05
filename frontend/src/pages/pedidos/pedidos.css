@@ -19,6 +19,33 @@
   background-color: #FFC0CB;
 }
 
+.btn-voltar {
+  padding: 0.5rem 1rem;
+  background-color: #FFB6C1;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  margin: 1rem auto 2rem auto;
+  text-align: center;
+  width: fit-content;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Centraliza o botão dentro do container */
+.pedidos-container .btn-voltar-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+
+.btn-voltar:hover {
+  background-color: #FFC0CB;
+}
+
+
 .pedidos-tabela {
   width: 100%;
   margin-top: 1rem;
@@ -113,20 +140,19 @@
   background-color: #FFC0CB;
 }
 
-/* Novo estilo para container dos itens */
+
 .item-linha {
   display: flex;
   gap: 0.5rem;
   align-items: center;
 }
 
-/* Inputs menores para itens */
+
 .item-linha input {
   flex: 1 1 auto;
-  min-width: 0; /* para evitar overflow */
+  min-width: 0; 
 }
 
-/* Botão remover item */
 .item-linha button {
   background-color: #ef4444;
   border: none;
@@ -157,4 +183,60 @@
 
 .pedidos-form > button[type="button"]:hover {
   background-color: #2563eb;
+}
+
+.btn-visualizar {
+  padding: 0.25rem 0.5rem;
+  background-color: #10b981; 
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.btn-visualizar:hover {
+  background-color: #059669; 
+}
+
+.nota-fiscal-section {
+  margin: 2rem auto; 
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  max-width: 700px;
+  width: 90%; 
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+.nota-fiscal-section h3 {
+  color: #c74c67; 
+  margin-bottom: 1rem;
+}
+
+.nota-fiscal-section p {
+  margin: 0.4rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.nota-fiscal-section a {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #ffb6c1;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.nota-fiscal-section a:hover {
+  background-color: #ffc0cb;
 }

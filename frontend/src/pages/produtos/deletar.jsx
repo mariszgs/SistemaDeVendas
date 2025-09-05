@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 function ProdutosDeletar() {
-  const { id } = useParams(); // pega o ID da URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function ProdutosDeletar() {
       return;
     }
 
-    axios.delete(`http://sdv.local/products/${id}`)
+    axios.delete(`http://sdv.local/products/delete/${id}`)
       .then(() => {
         alert("Produto deletado com sucesso!");
         navigate("/dashboard/produtos/listar");

@@ -77,8 +77,6 @@
   background-color: #dc2626;
 }
 
-/* Se quiser reaproveitar para os formulários também */
-
 .produtos-form {
   display: flex;
   flex-direction: column;
