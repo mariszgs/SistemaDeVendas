@@ -258,9 +258,10 @@ class OrderController extends AbstractActionController
 
         $adapter = Db::adapter();
 
-        $sql = "SELECT p.*, c.nome as cliente_nome
+        $sql = "SELECT p.*, c.nome as cliente_nome, u.nome as usuario_nome
                 FROM pedidos p
                 JOIN clientes c ON c.id = p.cliente_id
+                LEFT JOIN usuarios u ON u.id = p.usuario_id
                 WHERE p.id = :id";
         $stmt = $adapter->createStatement($sql);
         $pedido = $stmt->execute(['id' => $id])->current();
@@ -278,7 +279,6 @@ class OrderController extends AbstractActionController
 
         $pedido['itens'] = $itens;
 
-
         $sqlNfe = "SELECT * FROM nfe WHERE pedido_id = :id";
         $stmtNfe = $adapter->createStatement($sqlNfe);
         $nfe = $stmtNfe->execute(['id' => $id])->current();
@@ -295,6 +295,7 @@ class OrderController extends AbstractActionController
         return new JsonModel(['ok'=>false,'error'=>$e->getMessage()]);
     }
 }
+
 
 public function updateAction()
 {

@@ -10,7 +10,7 @@ function PedidosVisualizar() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true); // Garante loading no começo da requisição
+    setLoading(true); 
     axios.get(`http://sdv.local/orders/get/${id}`)
       .then(res => {
         if (res.data.ok && res.data.pedido) {
@@ -43,8 +43,8 @@ function PedidosVisualizar() {
         <p><strong>Cliente ID:</strong> {pedido.cliente_id}</p>
         <p><strong>Status:</strong> {pedido.status}</p>
         <p><strong>Total:</strong> R$ {(Number(pedido.total) || 0).toFixed(2)}</p>
-        <p><strong>Criado em:</strong> {pedido.criado_em || 'Não informado'}</p>
-        <p><strong>Usuário:</strong> {pedido.usuario || 'Não informado'}</p>
+        <p><strong>Criado em:</strong> {pedido.data_pedido || 'Não informado'}</p>
+        <p><strong>Usuário:</strong> {pedido.nome || 'Não informado'}</p>
       </section>
 
       <section>
