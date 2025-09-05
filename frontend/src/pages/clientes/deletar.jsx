@@ -18,7 +18,7 @@ function ClientesDeletar() {
   function handleDelete() {
     axios
       .delete(`http://sdv.local/clients/delete/${id}`)
-      .then(() => navigate("/clientes"))
+      .then(() => navigate("/dashboard/clientes"))
       .catch((err) => console.error(err));
   }
 
@@ -35,7 +35,7 @@ function ClientesDeletar() {
         <button onClick={handleDelete} className="form-botao-deletar">
           Sim, excluir
         </button>
-        <Link to="/clientes" className="form-botao-cancelar">
+        <Link to="/dashboard/clientes" className="form-botao-cancelar">
           Cancelar
         </Link>
       </div>

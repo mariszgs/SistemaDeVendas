@@ -9,17 +9,17 @@ function PedidosDeletar() {
   useEffect(() => {
     if(window.confirm("Tem certeza que deseja deletar este pedido?")) {
       axios.delete(`http://sdv.local/orders/${id}`)
-        .then(() => navigate("/pedidos/listar"))
+        .then(() => navigate("/dashboard/pedidos/listar"))
         .catch(err => {
           alert("Erro ao deletar pedido.");
-          navigate("/pedidos/listar");
+          navigate("dashboard/pedidos/listar");
         });
     } else {
-      navigate("/pedidos/listar");
+      navigate("/dashboard/pedidos/listar");
     }
   }, [id, navigate]);
 
-  return null; // Não precisa renderizar nada, só redireciona
+  return null;
 }
 
 export default PedidosDeletar;

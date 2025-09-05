@@ -8,7 +8,7 @@ function ProdutosCriar() {
   const [produto, setProduto] = useState({
     nome: "",
     preco: "",
-    estoque: "",  // novo campo
+    estoque: "", 
   });
 
   function handleChange(e) {
@@ -18,7 +18,7 @@ function ProdutosCriar() {
   function handleSubmit(e) {
     e.preventDefault();
     axios.post("http://sdv.local/products/create", produto)
-      .then(() => navigate("/produtos/listar"))
+      .then(() => navigate("/dashboard/produtos/listar"))
       .catch(err => console.error(err));
   }
 

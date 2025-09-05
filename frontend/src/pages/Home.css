@@ -1,12 +1,69 @@
-.home {
+/* Container geral da página */
+.home-container {
   padding: 2rem;
+  font-family: Arial, sans-serif;
+  background-color: #f1f5f9;
+  min-height: 100vh;
 }
 
-.home h1 {
+/* Cabeçalho */
+.home-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.home-header h2 {
   font-size: 2rem;
-  margin-bottom: 1rem;
+  color: #1f2937;
+  font-weight: bold;
 }
 
-.home p {
-  color: #555;
+/* Conteúdo central */
+.home-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background-color: white;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  width: 100%;
+  max-width: 800px;
+}
+
+
+/* Texto da mensagem */
+.card p {
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 2rem;
+}
+
+/* Agrupamento dos botões */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Estilo dos botões */
+.btn {
+  background-color: #FFB6C1;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn:hover {
+  background-color: #FFC0CB;
 }

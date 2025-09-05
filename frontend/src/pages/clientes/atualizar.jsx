@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import './clientes.css'; // 🔄 Importa o CSS
+import './clientes.css'; 
 
 function ClientesAtualizar() {
   const { id } = useParams();
@@ -30,7 +30,7 @@ function ClientesAtualizar() {
     e.preventDefault();
     axios
       .post(`http://sdv.local/clients/update/${id}`, cliente)
-      .then(() => navigate("/clientes"))
+      .then(() => navigate("/dashboard/clientes"))
       .catch((err) => console.error(err));
   }
 

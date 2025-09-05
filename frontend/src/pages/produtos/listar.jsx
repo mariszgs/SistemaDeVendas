@@ -15,14 +15,14 @@ function ProdutosListar() {
   return (
     <div className="produtos-container">
       <h2>Produtos</h2>
-      <Link to="/produtos/criar" className="novo-produto-btn">Novo Produto</Link>
+      <Link to="/dashboard/produtos/criar" className="novo-produto-btn">Novo Produto</Link>
 
       <table className="produtos-tabela">
         <thead>
           <tr>
             <th>Nome</th>
             <th>Preço</th>
-            <th>Estoque</th> {/* Nova coluna */}
+            <th>Estoque</th> 
             <th>Ações</th>
           </tr>
         </thead>
@@ -31,11 +31,10 @@ function ProdutosListar() {
             <tr key={produto.id}>
               <td>{produto.nome}</td>
               <td>{produto.preco}</td>
-              <td>{produto.estoque}</td> {/* Exibindo estoque */}
+              <td>{produto.estoque}</td> 
               <td>
-                <Link to={`/produtos/editar/${produto.id}`} className="btn-editar">Editar</Link>
-                <Link to={`/produtos/deletar/${produto.id}`} className="btn-deletar">Deletar</Link>
-                {/* Botão de deletar, se tiver */}
+                <Link to={`/dashboard/produtos/editar/${produto.id}`} className="btn-editar">Editar</Link>
+                <Link to={`/dashboard/produtos/deletar/${produto.id}`} className="btn-deletar">Deletar</Link>
               </td>
             </tr>
           ))}

@@ -21,7 +21,7 @@ function ClientesCriar() {
     e.preventDefault();
     axios
       .post("http://sdv.local/clients/create", cliente)
-      .then(() => navigate("/clientes/listar"))
+      .then(() => navigate("/dashboard/clientes/listar"))
       .catch((err) => console.error(err));
   }
 

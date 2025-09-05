@@ -28,7 +28,7 @@ function ClientesListar() {
   return (
   <div className="clientes-container">
     <h2>Clientes</h2>
-    <Link to="/clientes/criar" className="novo-cliente-btn">
+    <Link to="/dashboard/clientes/criar" className="novo-cliente-btn">
       Novo Cliente
     </Link>
     <table className="clientes-tabela">
@@ -46,7 +46,7 @@ function ClientesListar() {
             <td>{c.email}</td>
             <td className="acao-container">
               <Link
-                to={`/clientes/editar/${c.id}`}
+                to={`/dashboard/clientes/editar/${c.id}`}
                 className="btn-editar"
               >
                 Editar

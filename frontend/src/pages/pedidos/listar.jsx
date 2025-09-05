@@ -11,7 +11,7 @@ useEffect(() => {
     .then(res => {
       if (Array.isArray(res.data.pedidos)) {
         setPedidos(res.data.pedidos);
-        console.log('Pedidos:', res.data.pedidos); // log para debug
+        console.log('Pedidos:', res.data.pedidos); 
       } else {
         setPedidos([]);
       }
@@ -25,7 +25,7 @@ useEffect(() => {
   return (
     <div className="pedidos-container">
       <h2>Pedidos</h2>
-      <Link to="/pedidos/criar" className="btn-novo">Novo Pedido</Link>
+      <Link to="/dashboard/pedidos/criar" className="btn-novo">Novo Pedido</Link>
 
       <table className="pedidos-tabela">
         <thead>
@@ -45,8 +45,8 @@ useEffect(() => {
               <td>{pedido.data_pedido ? new Date(pedido.data_pedido).toLocaleDateString() : ''}</td>
               <td>{pedido.status}</td>
               <td>
-                <Link to={`/pedidos/editar/${pedido.id}`} className="btn-editar">Editar</Link>
-                <Link to={`/pedidos/deletar/${pedido.id}`} className="btn-deletar">Deletar</Link>
+                <Link to={`/dashboard/pedidos/editar/${pedido.id}`} className="btn-editar">Editar</Link>
+                <Link to={`/dashboard/pedidos/deletar/${pedido.id}`} className="btn-deletar">Deletar</Link>
               </td>
             </tr>
           ))}

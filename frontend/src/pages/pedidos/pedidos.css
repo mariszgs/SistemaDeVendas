@@ -87,6 +87,8 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pedidos-form input:focus,
@@ -109,4 +111,50 @@
 
 .btn-submit:hover {
   background-color: #FFC0CB;
+}
+
+/* Novo estilo para container dos itens */
+.item-linha {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Inputs menores para itens */
+.item-linha input {
+  flex: 1 1 auto;
+  min-width: 0; /* para evitar overflow */
+}
+
+/* Botão remover item */
+.item-linha button {
+  background-color: #ef4444;
+  border: none;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.item-linha button:hover {
+  background-color: #dc2626;
+}
+
+/* Botão adicionar item */
+.pedidos-form > button[type="button"] {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.pedidos-form > button[type="button"]:hover {
+  background-color: #2563eb;
 }

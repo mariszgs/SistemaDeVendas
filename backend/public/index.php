@@ -12,7 +12,7 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 // Permite métodos usados no seu frontend
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 
-// Permite cabeçalhos específicos, se necessário
+// Permite cabeçalhos específicos, se necessário    
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Opcional: responde às requisições OPTIONS (CORS preflight)
